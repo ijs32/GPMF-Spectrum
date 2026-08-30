@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
-import logging
+import matplotlib as mpl
 
 
 def generate_plots(pam, ffa, preds, sigma, dates, y_mu, y_sd, emax=10.0,
@@ -54,6 +53,46 @@ def generate_plots(pam, ffa, preds, sigma, dates, y_mu, y_sd, emax=10.0,
     fig.savefig(out, dpi=300, bbox_inches='tight')
     plt.close(fig)
 
+
+def plot_rainbow_preds(E, date, preds, sigma, y_mu, y_sd, epochs,
+                       emax=1.0, band=True, cmap='turbo',
+                       out='./plots/rainbow_preds.png'):
+    """epochs: the specific dates to draw, one coloured curve each."""
+    keep = E <= emax
+    E, date, preds, sigma = E[keep], date[keep], preds[keep], sigma[keep]
+
+    mid = np.exp(preds * y_sd + y_mu)
+    lo  = np.exp((preds - 2*sigma) * y_sd + y_mu)
+    hi  = np.exp((preds + 2*sigma) * y_sd + y_mu)
+
+    epochs = np.sort(np.asarray(epochs))
+    colors = mpl.colormaps[cmap](np.linspace(0.05, 0.95, len(epochs)))
+
+    fig, ax = plt.subplots(figsize=(7, 5))
+
+    available = np.unique(date)
+    for c, d_req in zip(colors, epochs):
+        dd = available[np.argmin(np.abs(available - d_req))]
+        m = date == dd
+        o = np.argsort(E[m])
+        if band:
+            ax.fill_between(E[m][o], lo[m][o], hi[m][o],
+                            color=c, alpha=0.15, linewidth=0, zorder=1)
+        ax.plot(E[m][o], mid[m][o], color=c, linewidth=1.6,
+                label=f'{dd:.3f}', zorder=2)
+
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_xlabel('Energy [GeV]')
+    ax.set_ylabel(r'Flux [m$^{-2}$ s$^{-1}$ sr$^{-1}$ GeV$^{-1}$]')
+    ax.set_title('Co-Kriging proton spectra')
+    ax.grid(True, which='both', alpha=0.2)
+    ax.legend(title='Epoch', fontsize=9, title_fontsize=9, loc='lower right')
+
+    fig.savefig(out, dpi=300, bbox_inches='tight')
+    plt.close(fig)
+
+
 pam = np.loadtxt('./data/pamela/pam_combined.csv', delimiter=',', skiprows=1)
 ffa = np.loadtxt('./data/ffa/ffa_combined.csv', delimiter=',', skiprows=1)
 
@@ -72,4 +111,7 @@ dates_unique = np.unique(date_hi)
 dates = [dates_unique[i*6] for i in range(6)]
 
 generate_plots(pam, ffa, preds, sigma, dates, y_mu, y_sd)
+
+plot_rainbow_preds(d['E'], d['date'], preds, d['sigma'],
+                   float(d['y_mu']), float(d['y_sd']), dates)
 
