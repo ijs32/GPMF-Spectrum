@@ -46,7 +46,8 @@ def load_ffa(file):
 def load_pam(date):
     df = pd.read_csv(
         "./data/pamela/txt/File_content_index.txt",
-        sep=" ; "
+        sep=" ; ",
+        engine='python'
     )
 
     df["Start Date"] = pd.to_datetime(df["Start Date"])
