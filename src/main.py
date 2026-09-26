@@ -72,7 +72,7 @@ def load_pam(date):
 def main():
     for file in Path("./data/ffa").iterdir():
         date = file.stem.split("-")[1]
-        datetime = dt.date(int(date),1,1)
+        datetime = dt.date(int(float(date)),1,1)
 
         ffa = load_ffa(file)
         ffa_corrected = unit_correct_ffa(ffa)

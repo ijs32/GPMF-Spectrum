@@ -9,14 +9,12 @@ def test_model(pam):
     E    = pam[:, 0]
     date = pam[:, 6]
     flux = pam[:, 3]
-    ferr = pam[:, 4]
 
     X = np.column_stack([np.log10(E), date])
 
     ylog = np.log(flux)
     y_mu, y_sd = ylog.mean(), ylog.std()
     y    = (ylog - y_mu) / y_sd
-    yerr = (ferr / flux) / y_sd
 
     xmax = X.max(axis=0)
     xmin = X.min(axis=0)
@@ -27,9 +25,8 @@ def test_model(pam):
     for train_idx, test_idx in kf.split(X):
         X_tr, X_te = X[train_idx], X[test_idx]
         y_tr, y_te = y[train_idx], y[test_idx]
-        y_err_tr   = yerr[train_idx]
 
-        model = EmuKitPam(X_tr, y_tr, y_err_tr, xmax, xmin)
+        model = EmuKitGP(X_tr, y_tr, xmax, xmin)
         mean = model.evaluate(X_te).ravel()
 
         preds.append(mean)

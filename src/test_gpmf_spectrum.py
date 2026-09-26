@@ -6,7 +6,7 @@ from shared.emukitGP import EmuKitGP
 
 
 def test_model(pam, ffa):
-    E_hi, date_hi, flux_hi, ferr_hi = pam[:,0], pam[:,6], pam[:,3], pam[:,4]
+    E_hi, date_hi, flux_hi = pam[:,0], pam[:,6], pam[:,3]
     X_hi = np.column_stack([np.log10(E_hi), date_hi])
 
     E_lo, date_lo, flux_lo = ffa[:,0], ffa[:,2], ffa[:,1]
