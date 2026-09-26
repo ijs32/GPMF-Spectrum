@@ -1,3 +1,8 @@
+<details>
+  <summary>🔍 Click here to view the poster presented off of this repo.</summary>
+  <img src="./docs/poster.png" alt="PDF Page 1" width="100%">
+</details>
+
 # GETTING STARTED
 
 ## SIMPLE STARTUP
