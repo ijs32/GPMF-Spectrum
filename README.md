@@ -7,7 +7,7 @@
 
 ## SIMPLE STARTUP
 To ensure the code will run on whatever system you are using, I recommend using the uv virtual environment. This project comes with a pyproject.toml file, if you have some other preferred method, it should be simple enough to download the necessary packages.
-If you do not intend to use uv, just know the uv command is equivalent to `python "some_file.py"`.
+If you do not intend to use uv, just know the uv command is equivalent to `python some_file.py`.
 
 ### UV INSTALL
 Run the following command to install uv.
@@ -17,7 +17,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 ## DATA (OPTIONAL)
-All data required to run the model and generate plots is include in the `./src/data` directory. However, if you like to
+All data required to run the model and generate plots is included in the `./src/data` directory. However, if you would like to
 pull the data yourself, you can find it [here (PAMELA)](https://tools.ssdc.asi.it/CosmicRays/sf_search.jsp)  and [here (FFA)](https://gcr.lpl.arizona.edu/gcr.php)
 
 If you do decide to pull the data yourself, you will need to make the following changes to the original PAMELA data for certain processes to run correctly:
@@ -40,7 +40,7 @@ cd src
 uv run merge_ffa_data.py
 ```
 
-Now you are read to run the model and create plots.
+Now you are ready to run the model and create plots.
 
 ## RUN
 To interact with the model, run all commands from within the `./src` directory:
