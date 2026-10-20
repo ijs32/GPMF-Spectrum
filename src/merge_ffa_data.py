@@ -9,6 +9,9 @@ def load_ffa() -> pd.DataFrame:
     df_list   = []
 
     for f in Path(file_path).iterdir():
+        if f.suffix == ".csv":
+            continue
+
         filename = f.name
         date = f.stem.split("-")[1]
 

@@ -1,5 +1,5 @@
 # Data from SSDC cosmic rays database www.ssdc.asi.it 
-# File generated today 20260804 
+# File generated today 20261020 
 # Errors may contain statistic and systematic depending on the options set when drawing the graph 
 # Fluxes are multiplied by a power of Energy (or Rigidity) if the option is set when drawing the graph 
 # Horizontal errors usually are not uncertanties of the measurement but correspond to binning. See publication. 

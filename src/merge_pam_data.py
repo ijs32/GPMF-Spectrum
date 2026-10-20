@@ -24,11 +24,14 @@ def to_year_fraction(date):
 
 def load_pam() -> pd.DataFrame:
     df = pd.read_csv(
-        "./data/pamela/txt/File_content_index.txt",
-        sep=" ; "
+        "./data/pamela/File_content_index.txt",
+        sep=" ; ",
+        engine="python",
+        skiprows=2,
+        header=None,
+        names=["Filename", "Particle", "Mission", "Reference", "Start_Date",
+               "Stop_Date", "Notes", "time_min", "time_max"],
     )
-
-    df = df.rename(columns={'Start Date': 'Start_Date', 'Stop Date': 'Stop_Date'})
 
     df["Start_Date"] = pd.to_datetime(df["Start_Date"])
     df["Stop_Date"]  = pd.to_datetime(df["Stop_Date"])
@@ -42,7 +45,7 @@ def load_pam() -> pd.DataFrame:
         decimal_start_year = to_year_fraction(row.Start_Date) 
         decimal_stop_year  = to_year_fraction(row.Stop_Date)
 
-        avg_year = (decimal_start_year + decimal_stop_year) / 2
+        avg_year = round(((decimal_start_year + decimal_stop_year) / 2), 4)
 
         pam = pd.read_csv(
             file_path + file,
