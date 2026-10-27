@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-
+import questionary
+from pathlib import Path
 
 from datetime import datetime, timedelta
 
@@ -123,26 +124,36 @@ def plot_rainbow_preds(E, date, preds, sigma, y_mu, y_sd, epochs, pam,
     plt.close(fig)
 
 
-pam = np.loadtxt('./data/pamela/pam_combined.csv', delimiter=',', skiprows=1)
-ffa = np.loadtxt('./data/ffa/ffa_combined.csv', delimiter=',', skiprows=1)
+if __name__ == "__main__":
+    pam = np.loadtxt('./data/pamela/pam_combined.csv', delimiter=',', skiprows=1)
+    ffa = np.loadtxt('./data/ffa/ffa_combined.csv', delimiter=',', skiprows=1)
 
-E_hi, date_hi, flux_hi = pam[:,0], pam[:,6], pam[:,3]
-X_hi = np.column_stack([np.log10(E_hi), date_hi])
+    E_hi, date_hi, flux_hi = pam[:,0], pam[:,6], pam[:,3]
+    X_hi = np.column_stack([np.log10(E_hi), date_hi])
 
-E_lo, date_lo, flux_lo = ffa[:,0], ffa[:,2], ffa[:,1]
-X_lo = np.column_stack([np.log10(E_lo), date_lo])
+    E_lo, date_lo, flux_lo = ffa[:,0], ffa[:,2], ffa[:,1]
+    X_lo = np.column_stack([np.log10(E_lo), date_lo])
 
-d = np.load('./data/preds/mf_preds.npz')
-E, date_pred = d['E'], d['date']
-preds, sigma = d['preds'], d['sigma']
-y_mu, y_sd = float(d['y_mu']), float(d['y_sd'])
 
-dates_unique = np.unique(date_hi)
+    file_path = "./data/preds"
+    selected_preds = questionary.select(
+        "Select saved model predictions:",
+        choices=[f.name for f in Path(file_path).iterdir()]
+    ).ask()
 
-dates = [dates_unique[i*6] for i in range(6)]
+    print(f"You selected: {selected_preds}")
 
-generate_plots(pam, ffa, preds, sigma, dates, y_mu, y_sd)
+    d = np.load(f"./data/preds/{selected_preds}")
+    E, date_pred = d['E'], d['date']
+    preds, sigma = d['preds'], d['sigma']
+    y_mu, y_sd = float(d['y_mu']), float(d['y_sd'])
 
-plot_rainbow_preds(E, date_pred, preds, sigma,
-                   y_mu, y_sd, dates, pam)
+    dates_unique = np.unique(date_hi)
+
+    dates = [dates_unique[i*6] for i in range(6)]
+
+    generate_plots(pam, ffa, preds, sigma, dates, y_mu, y_sd)
+
+    plot_rainbow_preds(E, date_pred, preds, sigma,
+                    y_mu, y_sd, dates, pam)
 

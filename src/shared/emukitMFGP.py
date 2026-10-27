@@ -1,21 +1,32 @@
-from collections.abc import Callable
+import os
+
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+
 
 import GPy
 import numpy as np
+
+from joblib import Parallel, delayed
 from emukit.multi_fidelity.kernels import LinearMultiFidelityKernel
 from emukit.multi_fidelity.models import GPyLinearMultiFidelityModel
 from emukit.multi_fidelity.convert_lists_to_array import convert_xy_lists_to_arrays
 
-
 class EmukitMFGP:
-    def __init__(self, x_lo, y_lo, x_hi, y_hi, xmin, xmax):
+    def __init__(self, x_lo, y_lo, x_hi, y_hi, xmin, xmax, num_restarts=4):
         self.dim = x_hi.shape[1]
         self.xmin, self.xmax = xmin, xmax
+        self.num_restarts = num_restarts
 
         y_lo = np.asarray(y_lo, float).reshape(-1, 1)
         y_hi = np.asarray(y_hi, float).reshape(-1, 1)
+ 
+        X_train, Y_train = convert_xy_lists_to_arrays([x_lo, x_hi], [y_lo, y_hi])
+        
+        self.X_train = np.asfortranarray(X_train)
+        self.Y_train = np.asfortranarray(Y_train)
 
-        self.X_train, self.Y_train = convert_xy_lists_to_arrays([x_lo, x_hi], [y_lo, y_hi])
         self.fit_model()
 
 
@@ -38,7 +49,28 @@ class EmukitMFGP:
         self.model.mixed_noise.Gaussian_noise_1.variance.constrain_bounded(1e-6, 1e-1)
         self.model.mixed_noise.Gaussian_noise_1.variance[:] = 1e-2
 
-        self.model.optimize_restarts(num_restarts=5)
+        seeds = np.random.randint(0, 10000, size=self.num_restarts)
+        results = Parallel(n_jobs=-1, backend="loky")(
+            delayed(self._optimize_model)(seed, self.model) for seed in seeds
+        )
+        # self.model.optimize_restarts(num_restarts=5, verbose=False, messages=False, parallel=True)
+
+        
+        best_log_likelihood, best_params = max(results, key=lambda x: x[0])
+        if best_params is not None:
+            self.model.optimizer_array = best_params
+            self.model.parameters_changed()
+
+    def _optimize_model(self, seed, model):
+        np.random.seed(seed)
+        model_copy = model.copy()
+        model_copy.randomize()
+        try:
+            model_copy.optimize(max_iters=1000, messages=True)
+            return model_copy.log_likelihood(), model_copy.optimizer_array
+        except Exception as e:
+            print(f"Optimization failed for seed {seed}: {e}")
+            return -np.inf, None
 
     def _as_high(self, x):
         x = np.atleast_2d(np.asarray(x, float))

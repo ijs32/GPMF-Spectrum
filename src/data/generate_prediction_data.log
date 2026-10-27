@@ -1,6 +1,12 @@
-2026-08-30 11:27:54,365 - INFO - Starting fit of model at 11:27:54.365174
-2026-08-30 11:38:58,499 - INFO - fit of model complete at 11:38:58.498955
-2026-08-30 11:38:58,499 - INFO - duration: 0:11:04.133781
-2026-08-30 11:38:58,499 - INFO - starting predictions at 11:38:58.499142
-2026-08-30 11:38:58,971 - INFO - finished predictions at 11:38:58.971680
-2026-08-30 11:38:58,972 - INFO - duration: 0:00:00.472538
+2026-10-27 15:40:40,501 - INFO - Starting fit of model at 15:40:40.501752
+2026-10-27 15:40:40,503 - WARNING - reconstraining parameters Mat52.lengthscale
+2026-10-27 15:40:40,503 - WARNING - reconstraining parameters Mat52.lengthscale
+2026-10-27 15:40:40,503 - WARNING - reconstraining parameters Mat52.variance
+2026-10-27 15:40:40,503 - WARNING - reconstraining parameters Mat52.lengthscale
+2026-10-27 15:40:40,504 - WARNING - reconstraining parameters Mat52.lengthscale
+2026-10-27 15:40:40,504 - WARNING - reconstraining parameters Mat52.variance
+2026-10-27 15:40:40,506 - INFO - initializing Y
+2026-10-27 15:40:40,506 - INFO - initializing inference method
+2026-10-27 15:40:40,506 - INFO - adding kernel and likelihood as parameters
+2026-10-27 15:40:46,526 - INFO - Warning: changing parameters to satisfy constraints
+2026-10-27 15:40:48,350 - WARNING - reconstraining parameters gp.mixed_noise.Gaussian_noise_1.variance
